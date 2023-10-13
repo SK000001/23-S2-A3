@@ -9,7 +9,7 @@ class Mode2Navigator:
         """
         Student-TODO: Best/Worst Case
         """
-        raise NotImplementedError()
+        self.n_pirates = n_pirates
 
     def add_islands(self, islands: list[Island]):
         """
@@ -22,3 +22,13 @@ class Mode2Navigator:
         Student-TODO: Best/Worst Case
         """
         raise NotImplementedError()
+
+if __name__ == "__main__":
+        a = Island("A", 400, 100)
+        b = Island("B", 300, 150)
+        c = Island("C", 100, 5)
+        d = Island("D", 350, 90)
+        e = Island("E", 300, 100)
+        islands = [
+            a, b, c, d, e
+        ]
