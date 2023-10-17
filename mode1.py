@@ -13,17 +13,7 @@ class Mode1Navigator:
         self.islands = islands
         self.crew = crew
         
-    def _sort_islands_with_ratio_inorder_iterator(self) -> BinarySearchTree:
-        island_ratio_bst = BinarySearchTree()
-        
-        for i in self.islands:
-            ratio = i.marines / i.money
-            
-            island_ratio_bst[ratio] = Island(i.name, i.money, i.marines)
-            
-        in_order_iterator = BSTInOrderIterator(island_ratio_bst.root)
-        return in_order_iterator
-        
+        self.island_ratio_bst = islands_from_ratio_bst(self.islands)
 
     def select_islands(self) -> list[tuple[Island, int]]:
         """
@@ -32,7 +22,7 @@ class Mode1Navigator:
         temp_crew = self.crew
         islands = []
         
-        for i in self._sort_islands_with_ratio_inorder_iterator():
+        for i in BSTInOrderIterator(self.island_ratio_bst.root):
             island = i.item
             marines = island.marines
             
@@ -78,3 +68,34 @@ class Mode1Navigator:
                 i.money = new_money
                 i.marines = new_marines
                 break
+            
+        self.island_ratio_bst = islands_from_ratio_bst(self.islands)
+        
+def islands_from_ratio_bst(islands) -> BinarySearchTree:
+        island_ratio_bst = BinarySearchTree()
+        copy_island = [Island(i.name, i.money, i.marines) for i in islands]
+        
+        for i in copy_island:
+            ratio = i.marines / i.money
+            
+            island_ratio_bst[ratio] = Island(i.name, i.money, i.marines)
+            
+        return island_ratio_bst
+    
+if __name__ == "__main__":
+    a = Island("A", 400, 100)
+    b = Island("B", 300, 150)
+    c = Island("C", 100, 5)
+    d = Island("D", 350, 90)
+    e = Island("E", 300, 100)
+    islands = [
+        a, b, c, d, e
+    ]
+    
+    nav = Mode1Navigator(islands, 500)
+    selected = nav.select_islands()
+    
+    print(nav.select_islands_from_crew_numbers([0, 200, 500, 300, 40]))
+    
+    # for i, j in selected:
+    #     print(i.name, j)
