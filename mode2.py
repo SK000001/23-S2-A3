@@ -3,12 +3,16 @@ from data_structures.heap import MaxHeap
 
 class Mode2Navigator:
     """
-    Student-TODO: short paragraph as per https://edstem.org/au/courses/12108/lessons/42810/slides/294117
+    :Creates a navigator that selects islands to plunder based on the score of each island. but changes islands as rutheless pirates plunder them.
     """
 
     def __init__(self, n_pirates: int) -> None:
         """
-        Student-TODO: Best/Worst Case
+        Initialises Mode2Navigator.
+        
+        :return: None
+        
+        :Time Complexity: O(1)
         """
         self.n_pirates = n_pirates
         self.islands = []
@@ -16,23 +20,33 @@ class Mode2Navigator:
 
     def add_islands(self, islands: list[Island]):
         """
-        Student-TODO: Best/Worst Case
+        Adds islands to the instance variable self.islands.
+        
+        :return: None
+        
+        :Time Complexity: Best case O(1) when there are no islands to add. Worst Case O(N) (where N is the number of islands) when N number of islands are to be added.
         """
         for i in islands:
-            self.islands.append(i)
+            self.islands.append(i) # O(1)+O(1)+....+O(N)
 
     def simulate_day(self, crew: int) -> list[tuple[Island|None, int]]:
         """
-        Student-TODO: Best/Worst Case
+        :Simulates a day of plundering.
+        
+        :param: crew(int) - The number of pirates available for plundering.
+        
+        :return: A list of tuples of the form (Island, int) where the int is the number of marines sent to the island.
+        
+        :Time Complexity: Best Case O(1) when there are no islands to plunder. Worst Case O(NlogN) + O(M) * O(logN), where N is the number of islands and M is the number of crews.
         """
-        pirate_score_heap = islands_from_score_heap(self.islands, crew)
+        pirate_score_heap = islands_from_score_heap(self.islands, crew) # O(NlogN)
         result = []
         
-        for i in range(self.n_pirates):
+        for i in range(self.n_pirates): # O(M)
             island = None
             
             if len(pirate_score_heap) > 0:
-                score, island, crew_Sent, plundered = pirate_score_heap.get_max()
+                score, island, crew_Sent, plundered = pirate_score_heap.get_max()  # sink? O(logN)
                 
                 if island.money - plundered <= 0:
                     self.islands.remove(island)
@@ -52,16 +66,25 @@ class Mode2Navigator:
                 
                 
 def islands_from_score_heap(islands, crew) -> MaxHeap:
+    """
+    :Creates MaxHeap of islands based on the score of each island.
+    
+    :param: islands(list of Island objects), crew(int).
+    
+    :Time Complexity: Best/Worst complexity is O(NlogN), where N is the number of islands.
+    
+    :return: MaxHeap of islands based on the score of each island.
+    """
     pirate_score_heap = MaxHeap(len(islands))
 
-    for i in islands:
-        plundered = min(i.money, i.money * crew / i.marines)
+    for island in islands:
+        plundered = min(island.money, island.money * crew / island.marines)
             
-        crew_sent = min(crew, i.marines)
+        crew_sent = min(crew, island.marines)
         
         score = 2 * (crew - crew_sent) + plundered
         
-        pirate_score_heap.add((score, i, crew_sent, plundered))
+        pirate_score_heap.add((score, island, crew_sent, plundered))
         
     return pirate_score_heap        
 
@@ -76,7 +99,7 @@ if __name__ == "__main__":
         a, b, c, d, e
     ]
     
-    nav = Mode2Navigator(3)
+    nav = Mode2Navigator(10)
     nav.add_islands(islands)
     
     nav.simulate_day(100)
