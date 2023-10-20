@@ -27,7 +27,7 @@ class Mode2Navigator:
         :Time Complexity: Best case O(1) when there are no islands to add. Worst Case O(N) (where N is the number of islands) when N number of islands are to be added.
         """
         for i in islands:
-            self.islands.append(i) # O(1)+O(1)+....+O(N)
+            self.islands.append(i) # O(1)+O(1)+....+O(N), adding islands to self.islands
 
     def simulate_day(self, crew: int) -> list[tuple[Island|None, int]]:
         """
@@ -39,24 +39,24 @@ class Mode2Navigator:
         
         :Time Complexity: Best Case O(1) when there are no islands to plunder. Worst Case O(NlogN) + O(M) * O(logN), where N is the number of islands and M is the number of crews.
         """
-        pirate_score_heap = islands_from_score_heap(self.islands, crew) # O(NlogN)
+        pirate_score_heap = islands_from_score_heap(self.islands, crew) # O(NlogN), getting MaxHeap from scores
         result = []
         
-        for i in range(self.n_pirates): # O(M)
+        for i in range(self.n_pirates): # O(M), iterating number of pirates times
             island = None
             
             if len(pirate_score_heap) > 0:
                 score, island, crew_Sent, plundered = pirate_score_heap.get_max()  # sink? O(logN)
                 
-                if island.money - plundered <= 0:
+                if island.money - plundered <= 0:   # if island has no money left
                     self.islands.remove(island)
-                else:
-                    island.marines = max(0, island.marines-crew_Sent)
-                    island.money -= plundered
-                    pirate_score_heap = islands_from_score_heap(self.islands, crew)
+                else:   # if island has money left
+                    island.marines = max(0, island.marines-crew_Sent)   # change island marines after crew took out some marines
+                    island.money -= plundered       # change island money after crew plundered some money
+                    pirate_score_heap = islands_from_score_heap(self.islands, crew)     # create new MaxHeap from new updated island
                     
                 
-            if island == None:
+            if island == None:  # no more islands to plunder left but there are still crews left
                 result.append((None, 0))
                 continue
                 
@@ -78,13 +78,13 @@ def islands_from_score_heap(islands, crew) -> MaxHeap:
     pirate_score_heap = MaxHeap(len(islands))
 
     for island in islands:
-        plundered = min(island.money, island.money * crew / island.marines)
+        plundered = min(island.money, island.money * crew / island.marines) # plundered money
             
-        crew_sent = min(crew, island.marines)
+        crew_sent = min(crew, island.marines)   # crew sent to plunder island
         
-        score = 2 * (crew - crew_sent) + plundered
+        score = 2 * (crew - crew_sent) + plundered  # score of crew after plunder is complete 
         
-        pirate_score_heap.add((score, island, crew_sent, plundered))
+        pirate_score_heap.add((score, island, crew_sent, plundered))        # add tuple of score, island, crew_sent, plundered to MaxHeap (score is what determines the order)
         
     return pirate_score_heap        
 

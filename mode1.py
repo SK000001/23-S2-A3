@@ -18,7 +18,7 @@ class Mode1Navigator:
         self.islands = islands  # O(1)
         self.crew = crew    # O(1)
         
-        self.island_ratio_bst = islands_from_ratio_bst(self.islands) # O(NlogN), N being number of islands
+        self.island_ratio_bst = islands_from_ratio_bst(self.islands) # O(NlogN), N being number of islands, getting BST from ratio of marines to money
 
     def select_islands(self) -> list[tuple[Island, int]]:
         """
@@ -28,23 +28,23 @@ class Mode1Navigator:
         
         :Time Complexity: O(NlogN), where N is the number of islands.
         """
-        temp_crew = self.crew
+        temp_crew = self.crew   # we dont want to change the original crew
         islands = []
         
         # traversing the island_ratio_bst in order
         for i in BSTInOrderIterator(self.island_ratio_bst.root):
-            island = i.item
-            marines = island.marines
+            island = i.item # getting island from BSTInOrderIterator
+            marines = island.marines    # getting island marines
             
-            if temp_crew >= marines:
+            if temp_crew >= marines:    # if crew is greater than or equal to marines
                 islands.append((Island(island.name, island.money, island.marines), marines))
-                temp_crew -= marines
+                temp_crew -= marines    # subtracting marines from temp_crew
                 
-            elif temp_crew < marines:
-                if temp_crew > 0:
+            elif temp_crew < marines:   # if crew is less than marines
+                if temp_crew > 0:   # if crew is greater than 0
                     islands.append((Island(island.name, island.money, island.marines), temp_crew))
-                    temp_crew -= temp_crew
-                else:
+                    temp_crew -= temp_crew  
+                else:   # if crew is 0
                     islands.append((Island(island.name, island.money, island.marines), 0))
                 
         return islands
@@ -59,18 +59,18 @@ class Mode1Navigator:
         :Time Complexity: Best case is O(1) when the crew_numbers is empty. Worst case is O(NlogN), where N is the number of islands.
         """
         list_of_money = []
-        for crews in crew_numbers:
-            temp_crew = self.crew
-            self.crew = crews
+        for crews in crew_numbers:  # iterating through crew_numbers (list of int)
+            temp_crew = self.crew   # storing because it will change once we will change in next line. Had to change because self.crew is used in self.select_islands().
+            self.crew = crews   # change self.crew to crews
             
-            selected = self.select_islands()
-            self.crew = temp_crew
+            selected = self.select_islands()    # O(NlogN), where N is the number of islands
+            self.crew = temp_crew   # change self.crew back to original crew
             
-            current_money = 0
-            for island, crews_selected in selected:
-                current_money += min(island.money * crews_selected / island.marines, island.money)
+            current_money = 0   # current money made
+            for island, crews_selected in selected: # iterating through selected (list of tuples of the form (Island, int))
+                current_money += min(island.money * crews_selected / island.marines, island.money)  # calculating money made from island and adding to current_money
                 
-            list_of_money.append(current_money)
+            list_of_money.append(current_money)   # adding current_money to list_of_money
                 
         return list_of_money
 
@@ -81,15 +81,15 @@ class Mode1Navigator:
         
         :Return: None
         
-        :Time Complexity: Best Case is O(1)+O(NlogN) when island is found at start. Worst case is O(N)+O(NlogN) ( where N is the number of islands ) when island is found at the end.
+        :Time Complexity: Best Case is O(1)+O(NlogN) when island is found at start. Worst case is O(N)+O(NlogN) ( where N is the number of islands ) when island is found at the end or not found.
         """
-        for i in self.islands:
+        for i in self.islands: # iterating through islands
             if i.name == island.name:
                 i.money = new_money
                 i.marines = new_marines
                 break
             
-        self.island_ratio_bst = islands_from_ratio_bst(self.islands)
+        self.island_ratio_bst = islands_from_ratio_bst(self.islands) # O(NlogN), N being number of islands, getting BST from ratio of marines to money
         
 def islands_from_ratio_bst(islands) -> BinarySearchTree:
     """
@@ -101,13 +101,13 @@ def islands_from_ratio_bst(islands) -> BinarySearchTree:
     :Time Complexity: Worst/Best is O(NlogN), where N is the number of islands.
     """
     
-    island_ratio_bst = BinarySearchTree()
-    copy_island = [Island(i.name, i.money, i.marines) for i in islands]
+    island_ratio_bst = BinarySearchTree()   # instantiate BinarySearchTree
+    copy_island = [Island(i.name, i.money, i.marines) for i in islands] # we dont want to change the original islands
     
     for i in copy_island:
-        ratio = i.marines / i.money
+        ratio = i.marines / i.money # ratio of marines to money
         
-        island_ratio_bst[ratio] = Island(i.name, i.money, i.marines)
+        island_ratio_bst[ratio] = Island(i.name, i.money, i.marines) # add island to BinarySearchTree with ratio as key
         
     return island_ratio_bst
     
